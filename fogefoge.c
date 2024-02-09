@@ -1,74 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "fogefoge.h"
+#include "mapa.h"
 
-char **mapa;
-int linhas;
-int colunas;
+MAPA m;
 
-void alocarMapa()
-{
-  // Alocando o mapa de forma dinamica
-  mapa = malloc(sizeof(char *) * linhas);
-  for (int i = 0; i < linhas; i++)
-  {
-    mapa[i] = malloc(sizeof(char) * (colunas + 1));
-  }
+int acabou() {
+  return 0;
 }
-void lerMapa()
-{
-  // Abrindo o arquivo mapa.txt pelo ponteiro da memória f
-  FILE *f;
-  f = fopen("mapa.txt", "r");
 
-  if (f == 0)
+void move(char direcao) {
+  int x;
+  int y;
+
+  // Achando a posição do foge foge
+  for (int i = 0; i < m.linhas; i++)
   {
-    printf("Erro na leitura do mapa\n");
-    exit(1);
+    for(int j = 0; j < m.colunas; j++){
+      if(m.matriz[i][j] == '@'){
+        x = i;
+        y = j;
+        break;
+      }
+    }
   }
 
-  fscanf(f, "%d %d", &linhas, &colunas);
-  printf("linhas: %d, colunas: %d\n", linhas, colunas);
-
-  alocarMapa();
-
-  // Lendo o arquivo mapa.txt linha por linha
-  for (int i = 0; i < 5; i++)
+  switch (direcao)
   {
-    // Lendo a linha do arquivo e armazenando na matriz mapa
-    // mapa[0] = Estou passando a primeira dimensão, ou seja, a linha inteira
-    fscanf(f, "%s", mapa[i]);
+  case 'a':
+    m.matriz[x][y-1] = '@';
+    break;
+  case 'w':
+    m.matriz[x-1][y] = '@';
+    break;
+  case 's':
+    m.matriz[x+1][y] = '@';
+    break;
+  case 'd':
+    m.matriz[x][y+1] = '@';
+    break;
   }
-  fclose(f);
-}
-void liberarMapa()
-{
-  for (int i = 0; i < 5; i++)
-  {
-    free(mapa[i]);
-  }
-  free(mapa);
+
+  // Tenho 2 pacman no mapa
+  m.matriz[x][y] = '.';
 }
 
 int main()
 {
-  // Criando uma matriz que representa o mapa do jogo
-  // Há 5 linhas e 10 colunas
-  // int numeros[20][10];
 
-  // mapa[0][0] = '|';
-  // mapa[4][9] = '@';
+  lerMapa(&m);
 
-  // printf("%c %c\n", mapa[0][0], mapa[4][9]);
-
-  lerMapa();
-
-  // Imprimindo todas as linhas do mapa
-  for (int i = 0; i < 5; i++)
+  do
   {
-    printf("%s\n", mapa[i]);
-  }
+    imprimirMapa(&m);
+    // Pegando a tecla do usuário
+    char comando;
+    scanf(" %c", &comando);
+    move(comando);
+  } while (!acabou());
 
-  liberarMapa();
+
+  liberarMapa(&m);
 
   // Alocando memória para um inteiro
   // int* v = malloc(sizeof(int) * 10);
