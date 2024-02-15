@@ -4,51 +4,80 @@
 #include "mapa.h"
 
 MAPA m;
+POSICAO heroi;
+
+void fanstasmas() {
+
+  MAPA copia;
+
+  copiaMapa(&copia, &m);
+
+  for(int i = 0; i < m.linhas; i++){
+    for (int j = 0; j < m.colunas; j++)
+    {
+      if(copia.matriz[i][j] == FANTASMA){
+        if(estaValido(&m,i, j+1) && ehvazio(&m, i, j+1)){
+          andandoMapa(&m, i, j, i, j+1);
+        }
+      }
+    }
+  }
+
+  liberarMapa(&copia);
+}
 
 int acabou() {
   return 0;
 }
 
-void move(char direcao) {
-  int x;
-  int y;
+int direcaoVerificada(char direcao) {
+  return direcao == 'a' || direcao == 'w' || direcao == 's' || direcao == 'd';
+}
 
-  // Achando a posição do foge foge
-  for (int i = 0; i < m.linhas; i++)
-  {
-    for(int j = 0; j < m.colunas; j++){
-      if(m.matriz[i][j] == '@'){
-        x = i;
-        y = j;
-        break;
-      }
-    }
+void move(char direcao) {
+
+  if(!direcaoVerificada(direcao)) {
+    return;
   }
+
+  int proximoX = heroi.x;
+  int proximoY = heroi.y;
 
   switch (direcao)
   {
-  case 'a':
-    m.matriz[x][y-1] = '@';
+  case ESQUERDA:
+    proximoY--;
     break;
-  case 'w':
-    m.matriz[x-1][y] = '@';
+  case CIMA:
+    proximoX--;
     break;
-  case 's':
-    m.matriz[x+1][y] = '@';
+  case BAIXO:
+    proximoX++;
     break;
-  case 'd':
-    m.matriz[x][y+1] = '@';
+  case DIREITA:
+    proximoY++;
     break;
+  };
+
+  if(!estaValido(&m, proximoX, proximoY)){
+    return;
   }
 
-  // Tenho 2 pacman no mapa
-  m.matriz[x][y] = '.';
+  if(!ehvazio(&m, proximoX, proximoY)){
+    return;
+  }
+
+  andandoMapa(&m, heroi.x, heroi.y, proximoX, proximoY);
+  heroi.x = proximoX;
+  heroi.y = proximoY;
+  
 }
 
 int main()
 {
 
   lerMapa(&m);
+  encontraMapa(&m, &heroi, HEROI);
 
   do
   {
@@ -57,6 +86,7 @@ int main()
     char comando;
     scanf(" %c", &comando);
     move(comando);
+    fanstasmas();
   } while (!acabou());
 
 
