@@ -1,10 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "fogefoge.h"
 #include "mapa.h"
 
 MAPA m;
 POSICAO heroi;
+
+int praOndeFastasmaVai(int xatual, int yatual, int* xdestino, int* ydestino){
+  int opcoes[4][2] = {
+    {xatual, yatual + 1},
+    {xatual + 1, yatual},
+    {xatual, yatual - 1},
+    {xatual - 1, yatual}
+  };
+
+  srand(time(0));
+  for(int i = 0; i < 10; i++){
+    int pos = rand() % 4;
+
+    if(podeAndar(&m, FANTASMA, opcoes[pos][0], opcoes[pos][1])){
+      *xdestino = opcoes[pos][0];
+      *ydestino = opcoes[pos][1];
+
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int acabou() {
+  POSICAO posicao;
+  int fogefogemapa = encontraMapa(&m, &posicao, HEROI);
+  printf("Foge foge mapa %d \n", fogefogemapa);
+  return !fogefogemapa;
+}
 
 void fanstasmas() {
 
@@ -16,6 +46,16 @@ void fanstasmas() {
     for (int j = 0; j < m.colunas; j++)
     {
       if(copia.matriz[i][j] == FANTASMA){
+
+        int xdestino;
+        int ydestino;
+
+        int encontrou = praOndeFastasmaVai(i, j, &xdestino, &ydestino);
+
+        if(encontrou){
+          andandoMapa(&m, i, j, xdestino, ydestino);
+        }
+
         if(estaValido(&m,i, j+1) && ehvazio(&m, i, j+1)){
           andandoMapa(&m, i, j, i, j+1);
         }
@@ -26,9 +66,7 @@ void fanstasmas() {
   liberarMapa(&copia);
 }
 
-int acabou() {
-  return 0;
-}
+
 
 int direcaoVerificada(char direcao) {
   return direcao == 'a' || direcao == 'w' || direcao == 's' || direcao == 'd';
@@ -59,11 +97,7 @@ void move(char direcao) {
     break;
   };
 
-  if(!estaValido(&m, proximoX, proximoY)){
-    return;
-  }
-
-  if(!ehvazio(&m, proximoX, proximoY)){
+  if(!podeAndar(&m, HEROI, proximoX, proximoY)){
     return;
   }
 

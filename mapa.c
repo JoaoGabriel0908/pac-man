@@ -18,6 +18,20 @@ void copiaMapa(MAPA* destino, MAPA* origem) {
   }
   
 }
+
+int podeAndar(MAPA* m, char personagem, int x, int y) {
+  return estaValido(m, x, y) && 
+  !ehParede(m, x, y) && 
+  !ehPersonagem(m, personagem, x, y);
+}
+
+int ehPersonagem(MAPA*m, char personagem, int x, int y){
+  return m->matriz[x][y] == personagem;
+}
+
+int ehParede(MAPA* m, int x, int y) {
+  return m->matriz[x][y] == PAREDE_VERTICAL || m->matriz[x][y] == PAREDE_HORIZONTAL;
+}
 void andandoMapa(MAPA* m, int xorigem, int yorigem, int xdestino, int ydestino) {
   char personagem = m->matriz[xorigem][yorigem];
   m->matriz[xdestino][ydestino] = personagem;
@@ -41,7 +55,7 @@ int ehvazio(MAPA* m, int x, int y) {
 }
 
 // Encontrando a posição do foge foge no mapa
-void encontraMapa(MAPA* m, POSICAO* p, char c){
+int encontraMapa(MAPA* m, POSICAO* p, char c){
   // Achando a posição do foge foge
   for (int i = 0; i < m->linhas; i++)
   {
@@ -49,10 +63,12 @@ void encontraMapa(MAPA* m, POSICAO* p, char c){
       if(m->matriz[i][j] == c){
         p->x = i;
         p->y = j;
-        break;
+        return 1;
       }
     }
   }
+
+  return 0;
 }
 
 // Acessando o conteudo do ponteiro m->
