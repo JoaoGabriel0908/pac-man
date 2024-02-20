@@ -4,6 +4,8 @@
 #define PAREDE_VERTICAL '|'
 #define PAREDE_HORIZONTAL '-'
 #define FANTASMA 'F'
+#define PILULA 'P'
+#define BOMBA 'b'
 struct mapa
 {
   char **matriz;

@@ -6,6 +6,7 @@
 
 MAPA m;
 POSICAO heroi;
+int temPilula = 0;
 
 int praOndeFastasmaVai(int xatual, int yatual, int* xdestino, int* ydestino){
   int opcoes[4][2] = {
@@ -101,10 +102,41 @@ void move(char direcao) {
     return;
   }
 
+  if(ehPersonagem(&m, PILULA, proximoX, proximoY)){
+    temPilula = 1;
+  }
+
   andandoMapa(&m, heroi.x, heroi.y, proximoX, proximoY);
   heroi.x = proximoX;
   heroi.y = proximoY;
   
+}
+
+void explodePilula() {
+
+  if(!temPilula) return;
+
+  explodePilula2(heroi.x, heroi.y, 0, 1, 3);
+  explodePilula2(heroi.x, heroi.y, 0, -1, 3);
+  explodePilula2(heroi.x, heroi.y, 1, 0, 3);
+  explodePilula2(heroi.x, heroi.y, -1, 0, 3);
+
+  temPilula = 0;
+}
+
+// Função Recursiva, ela chama ela mesmo.
+void explodePilula2(int x, int y, int somax, int somay, int qtd){
+
+  if(qtd == 0) return;
+
+  int novox = x + somax;
+  int novoy = y + somay;
+
+  if(!estaValido(&m, novox, novoy)) return;
+  if(ehParede(&m, novox, novoy)) return;
+
+  m.matriz[novox][novoy] = VAZIO;  
+  explodePilula2(novox, novoy, somax, somay, qtd - 1);
 }
 
 int main()
@@ -115,11 +147,17 @@ int main()
 
   do
   {
+    printf("Tem pilula: %s\n", (temPilula ? "Sim" : "Nao"));
     imprimirMapa(&m);
     // Pegando a tecla do usuário
     char comando;
     scanf(" %c", &comando);
     move(comando);
+
+    if(comando == BOMBA){
+      explodePilula();
+    }
+
     fanstasmas();
   } while (!acabou());
 

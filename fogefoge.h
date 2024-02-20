@@ -8,3 +8,6 @@ int acabou();
 int praOndeFastasmaVai(int xatual, int yatual, int* xdestino, int* ydestino);
 int direcaoVerificada(char direcao);
 void fanstasmas();
+void explodePilula();
+
+void explodePilula2(int x, int y, int somax, int somay, int qtd);
