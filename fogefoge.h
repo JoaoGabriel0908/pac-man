@@ -1,3 +1,6 @@
+#ifndef _FOGEFOGE_H_
+#define _FOGEFOGE_H_
+
 #define CIMA 'w'
 #define DIREITA 'd'
 #define ESQUERDA 'a'
@@ -11,3 +14,5 @@ void fanstasmas();
 void explodePilula();
 
 void explodePilula2(int x, int y, int somax, int somay, int qtd);
+
+#endif
